@@ -8,7 +8,7 @@ import "./Login.css";
 const Login = () => {
   return (
     <divs className="container">
-      <div style={{ width: "720px" }} className="login-card">
+      <div className="login-card">
         <div className="logo">
           <img
             style={{ width: "200px", height: "120px" }}
@@ -33,10 +33,12 @@ const Login = () => {
             </div>
 
             <Button
-              style={{ width: "120px" }}
+              style={{ width: "150px" }}
+              icon="pi pi-sign-in"
               label="Giriş Yap"
               className="p-button-rounded p-button-primary"
               size="small"
+              iconPos="right"
             />
           </div>
 
@@ -46,8 +48,9 @@ const Login = () => {
             <h2 className="text-color-secondary">Henüz üye değil misiniz?</h2>
             <Link to="/register">
               <Button
-                style={{ width: "120px" }}
+                style={{ width: "150px" }}
                 label="Kayıt Ol"
+                icon="pi pi-user-plus"
                 className="p-button-rounded p-button-help"
                 size="small"
               ></Button>
