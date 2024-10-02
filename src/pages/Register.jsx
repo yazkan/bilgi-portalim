@@ -9,7 +9,7 @@ import "primeflex/primeflex.css";
 const Register = () => {
   return (
     <div className="container">
-      <Card title="Register" className="p-fluid" style={{ width: "400px" }}>
+      <Card title="Kayıt Ol" className="p-fluid" style={{ width: "400px" }}>
         <div className="field">
           <label htmlFor="username">Kullanıcı Adı</label>
           <InputText id="username" placeholder="Kullanıcı Adınızı giriniz" />
@@ -33,7 +33,7 @@ const Register = () => {
           </Link>
         </div>
         <p>
-          Zaten bir hesabın var mı? <Link to="/login">Giriş</Link>
+          Zaten bir hesabın var mı? <Link to="/login">Giriş Yap</Link>
         </p>
       </Card>
     </div>

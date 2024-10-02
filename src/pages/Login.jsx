@@ -18,7 +18,7 @@ const Login = () => {
         </div>
         <div className="login-content">
           <div className="login-form">
-            <h2 className="text-primary">Giriş</h2>
+            <h2 className="text-primary">Giriş Yap</h2>
             <div className="input-group">
               <label htmlFor="username">Kullanıcı Adı</label>
               <InputText id="username" placeholder="Kullanıcı adını giriniz" />
@@ -34,7 +34,7 @@ const Login = () => {
 
             <Button
               style={{ width: "120px" }}
-              label="Giriş"
+              label="Giriş Yap"
               className="p-button-rounded p-button-primary"
               size="small"
             />
