@@ -3,24 +3,37 @@ import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Link } from "react-router-dom";
+import "./Login.css";
+import "primeflex/primeflex.css";
 
 const Register = () => {
   return (
-    <div className="flex justify-content-center align-items-center h-screen">
+    <div className="container">
       <Card title="Register" className="p-fluid" style={{ width: "400px" }}>
         <div className="field">
-          <label htmlFor="email">Email</label>
-          <InputText id="email" type="email" placeholder="Email" />
+          <label htmlFor="username">Kullanıcı Adı</label>
+          <InputText id="username" placeholder="Kullanıcı Adınızı giriniz" />
         </div>
         <div className="field">
-          <label htmlFor="password">Password</label>
-          <Password id="password" toggleMask feedback={false} />
+          <label htmlFor="password">Şifre</label>
+          <Password
+            id="password"
+            placeholder="Şifrenizi giriniz"
+            toggleMask
+            feedback={false}
+          />
         </div>
         <div className="field">
-          <Button label="Register" icon="pi pi-user-plus" className="w-full" />
+          <Link to="/">
+            <Button
+              label="Kayıt Ol"
+              icon="pi pi-user-plus"
+              className="p-button-rounded w-full"
+            />
+          </Link>
         </div>
         <p>
-          Already have an account? <Link to="/login">Login</Link>
+          Zaten bir hesabın var mı? <Link to="/login">Giriş</Link>
         </p>
       </Card>
     </div>
