@@ -8,15 +8,16 @@ import io from "socket.io-client"; // WebSocket bağlantısı için socket.io-cl
 const VideoConference = () => {
   const [participants, setParticipants] = useState([]); // Katılımcı listesi
   const [isMuted, setIsMuted] = useState(false); // Sessiz mod kontrolü
-  const [videoEnabled, setVideoEnabled] = useState(true); // Video açık/kapalı durumu
+  const [videoEnabled, setVideoEnabled] = useState(false); // Video açık/kapalı durumu
   const [socket, setSocket] = useState(null); // WebSocket bağlantısı
   const [producer, setProducer] = useState(null); // Mediasoup producer (video/ses akışı)
   const videoRef = useRef(null); // Video elemanına referans
   const toast = useRef(null); // Toast mesajı için referans
 
+  /*
   useEffect(() => {
     // WebSocket bağlantısı oluşturuluyor
-    const newSocket = io("http://localhost:3000"); // Backend'deki WebSocket adresine bağlanıyoruz
+    const newSocket = io("ws://localhost:3000/"); // Backend'deki WebSocket adresine bağlanıyoruz
     setSocket(newSocket);
 
     // Socket.io bağlantısı kapatılırken temizleme
@@ -62,7 +63,7 @@ const VideoConference = () => {
       });
     });
   }, [socket]);
-
+*/
   // Sessiz modu yönetir
   const toggleMute = () => {
     if (producer) {
@@ -71,12 +72,46 @@ const VideoConference = () => {
     }
   };
 
+  const endCall = () => {
+    if (socket) {
+      socket.close();
+      console.log("WebSocket disconnected");
+      setSocket(null);
+    }
+  };
+
   // Video aç/kapa işlevi
   const toggleVideo = () => {
+    const newSocket = new WebSocket("ws://localhost:3000");
+
+    newSocket.onopen = () => {
+      console.log("WebSocket connected");
+      newSocket.send("ggggg nazmi");
+    };
+
+    // WebSocket ile mesaj alındığında
+    newSocket.onmessage = (event) => {
+      console.log("Received from server: ", event.data);
+    };
+
+    // WebSocket bağlantısı kapandığında
+    newSocket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    // WebSocket bağlantısında hata olduğunda
+    newSocket.onerror = (error) => {
+      console.log("WebSocket error: ", error);
+    };
+
+    // Yeni bağlantıyı state'e kaydediyoruz
+    setSocket(newSocket);
+
+    /*
     if (producer) {
       videoEnabled ? producer.pause() : producer.resume();
       setVideoEnabled(!videoEnabled);
-    }
+    }*/
   };
 
   // WebRTC Send Transport oluşturulması (Mediasoup backend ile işbirliği içinde)
@@ -117,23 +152,25 @@ const VideoConference = () => {
         </Panel>
 
         {/* Kontrol düğmeleri */}
-        <div className="p-d-flex p-ai-center p-jc-between p-mt-3">
+        <div className="p-d-flex p-ai-center p-jc-between p-mt-3 m-2">
           <Button
             label={isMuted ? "Unmute" : "Mute"}
             icon="pi pi-volume-off"
             onClick={toggleMute}
-            className="p-button-rounded p-button-secondary"
+            className="p-button p-button-secondary ml-2"
           />
           <Button
-            label={videoEnabled ? "Stop Video" : "Start Video"}
+            disabled={socket ? true : false}
+            label={socket ? "Stop Video" : "Start Video"}
             icon="pi pi-video"
             onClick={toggleVideo}
-            className="p-button-rounded p-button-warning"
+            className="p-button mr-3 ml-3"
           />
           <Button
             label="End Call"
             icon="pi pi-times"
-            className="p-button-rounded p-button-danger"
+            className="p-button p-button-danger"
+            onClick={endCall}
           />
         </div>
       </div>

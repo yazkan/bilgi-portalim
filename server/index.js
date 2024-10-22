@@ -1,9 +1,11 @@
 import express from "express";
 import { WebSocketServer } from 'ws';
 import http from 'http';
-
+import cors from "cors"
 
 const app = express();
+app.use(cors());
+
 const port = 3000;
 const server = http.createServer(app);
 
