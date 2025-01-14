@@ -3,6 +3,7 @@ import cors from "cors";
 import loginRegister from "./routes/loginRegisterRouter.js";
 import course from "./routes/courseRouter.js";
 import assignment from "./routes/assignmentRouter.js";
+import post from "./routes/postRouter.js";
 //import path, { dirname } from "path";
 //import { fileURLToPath } from "url";
 
@@ -18,5 +19,6 @@ app.use(cors());
 app.use(loginRegister);
 app.use(course);
 app.use(assignment);
+app.use(post);
 
 app.listen(3000, () => console.log("Server running on port 3000!"));

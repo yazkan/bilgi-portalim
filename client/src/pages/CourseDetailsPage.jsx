@@ -48,7 +48,18 @@ const CourseDetailsPage = () => {
     }
   };
 
+  const fetchPosts = async () => {
+    try {
+      const response = await newRequest.get("/post/" + course.courseCode);
+      console.log("Posts fetched:", response.data);
+      setPosts(response.data);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
+
   useEffect(() => {
+    fetchPosts();
     fetchAssignments();
     fetchApllicants();
   }, []);
@@ -78,18 +89,26 @@ const CourseDetailsPage = () => {
     });
   };
 
-  const handlePostSubmit = () => {
+  const handlePostSubmit = async () => {
     if (newPost.trim()) {
       const currentDateTime = new Date();
-      const formattedDateTime = currentDateTime.toLocaleString();
+      const formattedDateTime = currentDateTime
+        .toLocaleString("tr-TR")
+        .split(" ")[0];
 
+      await newRequest.post("/post", {
+        courseCode: course.courseCode,
+        name: user.name,
+        content: newPost,
+        date: formattedDateTime,
+      });
       setPosts([
         ...posts,
         {
-          id: posts.length + 1,
+          courseCode: course.courseCode,
+          name: user.name,
           content: newPost,
-          author: user.name || "Unknown",
-          timestamp: formattedDateTime,
+          date: formattedDateTime,
         },
       ]);
       setNewPost("");
@@ -201,7 +220,7 @@ const CourseDetailsPage = () => {
                   style={{ marginBottom: "10px", position: "relative" }}
                 >
                   <p>
-                    <strong>{post.author}:</strong> {post.content}
+                    <strong>{post.name}:</strong> {post.content}
                   </p>
                   <p
                     style={{
@@ -212,7 +231,7 @@ const CourseDetailsPage = () => {
                       right: "10px",
                     }}
                   >
-                    İleti Zamanı: {post.timestamp}
+                    İleti Zamanı: {post.date}
                   </p>
                 </Card>
               ))}
