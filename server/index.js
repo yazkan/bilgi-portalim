@@ -1,37 +1,22 @@
 import express from "express";
-import { WebSocketServer } from 'ws';
-import http from 'http';
-import cors from "cors"
+import cors from "cors";
+import loginRegister from "./routes/loginRegisterRouter.js";
+import course from "./routes/courseRouter.js";
+import assignment from "./routes/assignmentRouter.js";
+//import path, { dirname } from "path";
+//import { fileURLToPath } from "url";
+
+//const __filename = fileURLToPath(import.meta.url);
+//const __dirname = dirname(__filename);
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-const port = 3000;
-const server = http.createServer(app);
+//app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(loginRegister);
+app.use(course);
+app.use(assignment);
 
-// WebSocket sunucusu oluşturuyoruz
-const wss = new WebSocketServer({ server });
-
-// WebSocket üzerinden gelen mesajları dinliyoruz
-wss.on('connection', (ws) => {
-    console.log('New WebSocket connection established');
-
-    // Mesaj alındığında yapılacak işlem
-    ws.on('message', (message) => {
-        console.log('Received: %s', message);
-        ws.send(`You said: ${message}`);
-    });
-
-    // Bağlantı kapanırsa
-    ws.on('close', () => {
-        console.log('WebSocket connection closed');
-    });
-});
-
-app.get('/', (req, res) => {
-    res.send('Hello World');
-});
-
-server.listen(port, () => {
-    console.log(`Server is running on port:${port}`);
-});
+app.listen(3000, () => console.log("Server running on port 3000!"));

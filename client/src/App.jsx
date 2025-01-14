@@ -5,6 +5,9 @@ import Register from "./pages/Register";
 import Landing from "./pages/Landing";
 import VideoConference from "./pages/VideoConference";
 import Dashboard from "./pages/Dashboard";
+import CourseDetailsPage from "./pages/CourseDetailsPage";
+import ErrorPage from "./pages/ErrorPage";
+import SettingsPage from "./pages/SettingsPage";
 
 function App() {
   return (
@@ -23,6 +26,24 @@ function App() {
           }
         />
         <Route
+          path="/settings"
+          element={
+            <>
+              <Navbar />
+              <SettingsPage />
+            </>
+          }
+        />
+        <Route
+          path="/coursedetails"
+          element={
+            <>
+              <Navbar />
+              <CourseDetailsPage />
+            </>
+          }
+        />
+        <Route
           path="/video"
           element={
             <>
@@ -31,6 +52,7 @@ function App() {
             </>
           }
         />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     </>
   );
