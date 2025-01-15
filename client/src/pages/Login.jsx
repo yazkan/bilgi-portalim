@@ -20,10 +20,13 @@ const Login = () => {
         username: username,
         password: password,
       });
+      console.log("Login response:");
+
+      console.log(res.data);
 
       localStorage.setItem(
         "user",
-        JSON.stringify(res.data[0] ? res.data[0] : null)
+        JSON.stringify(res.data["user"] ? res.data["user"] : null)
       );
       navigate("/dashboard");
     } catch (err) {

@@ -4,37 +4,85 @@ import { Button } from "primereact/button";
 import { ListBox } from "primereact/listbox";
 import { Card } from "primereact/card";
 import { Divider } from "primereact/divider";
+import newRequest from "../utils/newRequest";
 
 const MessagingPage = () => {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState({});
+  const [messages, setMessages] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [users, setUsers] = useState([
-    { name: "Ahmet", status: "online" },
-    { name: "Ayşe", status: "offline" },
-    { name: "Ali", status: "online" },
-    { name: "Zeynep", status: "online" },
-    { name: "Mehmet", status: "offline" },
-  ]);
+  const [users, setUsers] = useState([]);
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // fetchMessages içinde kullanıcıları ID'ye göre eşleyin
+  useEffect(() => {
+    if (users.length > 0 && selectedUser) {
+      fetchMessages();
+    }
+  }, [users, selectedUser]);
+
+  const fetchMessages = async () => {
+    try {
+      const response = await newRequest.get("/message", {
+        params: {
+          senderId: user.id,
+          receiverId: selectedUser?.id || null,
+        },
+      });
+      setMessages(response.data);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await newRequest.get("/users");
+      setUsers(response.data.filter((u) => u.id !== user.id));
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
   const messageEndRef = useRef(null);
 
-  const handleSendMessage = () => {
-    const currentDateTime = new Date();
-    const formattedDateTime = currentDateTime.toLocaleString();
+  const convertToDateTime = (dateTimeStr) => {
+    const [date, time] = dateTimeStr.split(" ");
+    const [day, month, year] = date.split(".");
+    const formattedDateTime = `${year}-${month}-${day} ${time}`;
+    return formattedDateTime;
+  };
 
-    if (message.trim() && selectedUser) {
-      const newMessages = { ...messages };
-      if (!newMessages[selectedUser.name]) {
-        newMessages[selectedUser.name] = [];
-      }
-      newMessages[selectedUser.name].push({
-        sender: "Ben",
-        content: message,
-        timestamp: formattedDateTime,
-      });
-      setMessages(newMessages);
+  const handleSendMessage = async () => {
+    if (!message.trim()) {
+      return;
+    }
+
+    const currentDateTime = new Date();
+    const formattedDateTime = convertToDateTime(
+      currentDateTime.toLocaleString()
+    );
+
+    const newMessage = {
+      senderName: user.name,
+      senderId: user.id,
+      receiverId: selectedUser.id,
+      timestamp: formattedDateTime,
+      content: message,
+    };
+
+    try {
+      await newRequest.post("/message", newMessage);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      console.log("Message sent:", newMessage);
+      console.log("Messages:", messages);
+
       setMessage("");
+    } catch (error) {
+      console.error("Error sending message:", error);
     }
   };
 
@@ -54,7 +102,10 @@ const MessagingPage = () => {
           value={selectedUser}
           options={users}
           optionLabel="name"
-          onChange={(e) => setSelectedUser(e.value)}
+          onChange={(e) => {
+            setSelectedUser(e.value);
+            fetchMessages();
+          }}
           style={{ maxHeight: "300px", overflowY: "auto" }} // Scrollbar için
           itemTemplate={(user) => (
             <div>
@@ -86,14 +137,14 @@ const MessagingPage = () => {
                 marginBottom: "10px",
               }}
             >
-              {(messages[selectedUser.name] || []).map((msg, idx) => (
+              {messages.map((msg, idx) => (
                 <Card
                   style={{ position: "relative" }}
                   key={idx}
                   className="mb-2"
                 >
                   <p>
-                    <strong>{msg.sender}: </strong>
+                    <strong>{msg.senderName}: </strong>
                     {msg.content}
                   </p>
                   <p
